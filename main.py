@@ -1,23 +1,36 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict, Any, List, Optional
+from fastapi.responses import JSONResponse
+from typing import Dict, Any, List, Optional, Union
 from pydantic import BaseModel
 import uvicorn
+import os
 
 app = FastAPI(
     title="Healthcare Mock API Service",
     version="1.0.0",
-    description="Mock API service for healthcare endpoints"
+    description="Mock API service for healthcare endpoints",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
+
+# Get allowed origins from environment variable or default to '*'
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "Healthcare Mock API"}
 
 # Response Models
 class MemberResponse(BaseModel):
@@ -965,4 +978,12 @@ async def search_member_error():
     return ERROR_RESPONSE
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=port,
+        reload=True,
+        workers=1 if os.getenv("ENV") == "development" else None
+    )
