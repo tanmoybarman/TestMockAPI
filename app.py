@@ -35,7 +35,7 @@ st.subheader("API Status")
 status_placeholder = st.empty()
 
 try:
-    response = requests.get("http://localhost:8000/")
+    response = requests.get("https://testmockapi-ftxmakr3ib5sqect24he2t.streamlit.app")
     if response.status_code == 200:
         status_placeholder.success("✅ API is running!")
         api_info = response.json()
@@ -48,7 +48,7 @@ except Exception as e:
 # API Documentation
 st.subheader("API Documentation")
 st.markdown("""
-The API is running and available at `http://localhost:8000`
+The API is running and available at `https://testmockapi-ftxmakr3ib5sqect24he2t.streamlit.app`
 
 ### Available Endpoints:
 
