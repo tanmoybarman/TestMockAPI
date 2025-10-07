@@ -34,23 +34,39 @@ server = start_fastapi()
 st.subheader("API Status")
 status_placeholder = st.empty()
 
+# Check if FastAPI server is running
 try:
-    response = requests.get("https://testmockapi-ftxmakr3ib5sqect24he2t.streamlit.app")
+    # This is the URL of your FastAPI server running locally
+    response = requests.get("http://localhost:8000/docs")
     if response.status_code == 200:
-        status_placeholder.success("✅ API is running!")
-        api_info = response.json()
-        st.json(api_info)
+        status_placeholder.success("✅ FastAPI server is running!")
+        st.markdown("""
+        ### API Documentation
+        The API is running locally at [http://localhost:8000](http://localhost:8000)
+        
+        - Interactive API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+        - Alternative docs: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+        """)
     else:
-        status_placeholder.error(f"❌ API returned status code: {response.status_code}")
-except Exception as e:
-    status_placeholder.error(f"❌ Could not connect to API: {str(e)}")
+        status_placeholder.error(f"❌ FastAPI returned status code: {response.status_code}")
+except requests.exceptions.RequestException as e:
+    status_placeholder.error(f"❌ Could not connect to FastAPI server: {str(e)}")
+    st.error("""
+    The FastAPI server failed to start. Here are some things to check:
+    1. Make sure port 8000 is not in use by another application
+    2. Check the Streamlit logs for any FastAPI startup errors
+    3. Try restarting the Streamlit app
+    """)
 
 # API Documentation
 st.subheader("API Documentation")
 st.markdown("""
-The API is running and available at `https://testmockapi-ftxmakr3ib5sqect24he2t.streamlit.app`
+### Local Development URLs
+- FastAPI Server: [http://localhost:8000](http://localhost:8000)
+- Interactive API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+- Alternative Docs: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
-### Available Endpoints:
+### Available Endpoints (Local Development):
 
 #### Member Endpoints
 - `GET /searchMemberById/m-a` - Get member details for ID 'm-a'
